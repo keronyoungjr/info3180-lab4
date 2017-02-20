@@ -19,6 +19,10 @@ def home():
     """Render website's home page."""
     return render_template('home.html')
 
+@app.route('/filelistening')
+def fileListening():
+     """Custom 404 page."""
+     return render_template('404.html'), 404
 
 @app.route('/about/')
 def about():
@@ -42,6 +46,29 @@ def add_file():
         return redirect(url_for('home'))
 
     return render_template('add_file.html')
+    
+@app.route('/filelisting', methods=['POST','GET'])
+def getfiles():
+    lf= listfiles()
+
+    return render_template('uploadpage.html', b=lf )
+
+
+def listfiles():
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'GET':
+        rootdir = os.getcwd()
+        print rootdir
+        myfiles = []
+        for subdir, dirs, files in os.walk(rootdir + '/app/static/uploads'):
+            for file in files:
+                myfiles.append(file)
+                print os.path.join(subdir, file)
+        return myfiles
+    
+    
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
